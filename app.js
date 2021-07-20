@@ -1,6 +1,6 @@
 // Book Class: Represents a Book
 class Book {
-	// Constructor is a method that runs when instantiating a book. It's going to take in all the fields
+	// constructor is a method that runs when instantiating a book. It's going to take in all the fields
 	constructor(title, author, isbn) {
 		this.title = title;
 		this.author = author;
@@ -12,21 +12,8 @@ class Book {
 class UI {
 	// Hard coded array of books prior to invoking local storage use
 	static displayBooks() {
-		const StoredBooks = [
-			{
-				title: "Book One",
-				author: "John Doe",
-				isbn: "3434434",
-			},
-			{
-				title: "Book Two",
-				author: "Jane Doe",
-				isbn: "45545",
-			},
-		];
-
 		// Setting books to the array
-		const books = StoredBooks;
+		const books = Store.getBooks();
 
 		// Looping through the books in the array and calling method addBookToList() which doesn't exist yet
 		books.forEach((book) => UI.addBookToList(book));
@@ -76,6 +63,38 @@ class UI {
 }
 
 // Store Class: Handles Storage
+class Store {
+	static getBooks() {
+		let books;
+		if (localStorage.getItem("books") === null) {
+			books = [];
+		} else {
+			books = JSON.parse(localStorage.getItem("books"));
+		}
+
+		return books;
+	}
+
+	static addBook(book) {
+		const books = Store.getBooks();
+
+		books.push(book);
+
+		localStorage.setItem("books", JSON.stringify(books));
+	}
+
+	static removeBook(isbn) {
+		const books = Store.getBooks();
+
+		books.forEach((book, index) => {
+			if (book.isbn === isbn) {
+				books.splice(index, 1);
+			}
+		});
+
+		localStorage.setItem("books", JSON.stringify(books));
+	}
+}
 
 // Event: Display Books
 document.addEventListener("DOMContentLoaded", UI.displayBooks);
@@ -100,6 +119,12 @@ document.querySelector("#book-form").addEventListener("submit", (e) => {
 		// Add Book to UI
 		UI.addBookToList(book);
 
+		// Add book to store
+		Store.addBook(book);
+
+		// Show success message
+		UI.showAlert("Book Added", "success");
+
 		// Clear fields after submit
 		UI.clearFields();
 	}
@@ -109,4 +134,10 @@ document.querySelector("#book-form").addEventListener("submit", (e) => {
 document.querySelector("#book-list").addEventListener("click", (e) => {
 	// Remove book from UI
 	UI.deleteBook(e.target);
+
+	// Remove book from store. Does this by grabbing the table data above the target (the X being the target) which is the parentElement, and grabbing IT'S previousElementSibling's text content, which is the ISBN needed to locate the item in local storage.
+	Store.removeBook(e.target.parentElement.previousElementSibling.textContent);
+
+	// Show success message
+	UI.showAlert("Book Removed", "success");
 });
