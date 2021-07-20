@@ -10,7 +10,7 @@ class Book {
 
 // UI Class: Handle UI Tasks
 class UI {
-    // Hard coded array of books prior to invoking local storage use
+	// Hard coded array of books prior to invoking local storage use
 	static displayBooks() {
 		const StoredBooks = [
 			{
@@ -25,10 +25,38 @@ class UI {
 			},
 		];
 
+		// Setting books to the array
 		const books = StoredBooks;
 
-        // Looping through the books in the array and calling method addBookToList() which doesn't exist yet
-        books.forEach(function((book) => UI.addBookToList(book));
+		// Looping through the books in the array and calling method addBookToList() which doesn't exist yet
+		books.forEach((book) => UI.addBookToList(book));
+	}
+
+	// Creating a row to put into the tbody of book-list
+	static addBookToList(book) {
+		// Grabbing list from the DOM
+		const list = document.querySelector("#book-list");
+
+		// Creating new row
+		const row = document.createElement("tr");
+
+		row.innerHTML = `
+          <td>${book.title}</td>
+          <td>${book.author}</td>
+          <td>${book.isbn}</td>
+          <td><a href="#" class="btn btn-danger btn-sm delete>X</a></td>
+        `;
+
+		// Appending new row to the list
+		list.appendChild(row);
 	}
 }
 
+// Store Class: Handles Storage (Local Storage)
+
+// Event: Dispay Books
+document.addEventListener("DOMContentLoaded", UI.displayBooks);
+
+// Event: Add a Book
+
+// Event: Remove a Book
